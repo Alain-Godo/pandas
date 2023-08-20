@@ -6274,9 +6274,10 @@ class Series(base.IndexOpsMixin, NDFrame):  # type: ignore[misc]
         axis: Axis | None = 0,
         skipna: bool = True,
         numeric_only: bool = False,
+        bias: bool = True,
         **kwargs,
     ):
-        return NDFrame.skew(self, axis, skipna, numeric_only, **kwargs)
+        return NDFrame.skew(self, axis, skipna, numeric_only, bias, **kwargs)
 
     @doc(make_doc("kurt", ndim=1))
     def kurt(
@@ -6284,9 +6285,10 @@ class Series(base.IndexOpsMixin, NDFrame):  # type: ignore[misc]
         axis: Axis | None = 0,
         skipna: bool = True,
         numeric_only: bool = False,
+        bias: bool = True,
         **kwargs,
     ):
-        return NDFrame.kurt(self, axis, skipna, numeric_only, **kwargs)
+        return NDFrame.kurt(self, axis, skipna, numeric_only, bias, **kwargs)
 
     kurtosis = kurt
     product = prod
