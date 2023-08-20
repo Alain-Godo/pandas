@@ -1198,9 +1198,11 @@ def nanskew(
     axis: AxisInt | None = None,
     skipna: bool = True,
     mask: npt.NDArray[np.bool_] | None = None,
+    bias: bool = True
 ) -> float:
     """
-    Compute the sample skewness.
+    Compute the skewness. Calculations are optional corrected for statistical
+    bias (sample or population).
 
     The statistic computed here is the adjusted Fisher-Pearson standardized
     moment coefficient G1. The algorithm computes this coefficient directly
@@ -1213,6 +1215,7 @@ def nanskew(
     skipna : bool, default True
     mask : ndarray[bool], optional
         nan-mask if known
+    bias : bool, default True
 
     Returns
     -------
@@ -1261,7 +1264,10 @@ def nanskew(
     m3 = _zero_out_fperr(m3)
 
     with np.errstate(invalid="ignore", divide="ignore"):
-        result = (count * (count - 1) ** 0.5 / (count - 2)) * (m3 / m2**1.5)
+        if bias:
+            result = (count * (count - 1) ** 0.5 / (count - 2)) * (m3 / m2**1.5)
+        else:
+            result = (m3 / m2**1.5)
 
     dtype = values.dtype
     if dtype.kind == "f":
@@ -1286,9 +1292,11 @@ def nankurt(
     axis: AxisInt | None = None,
     skipna: bool = True,
     mask: npt.NDArray[np.bool_] | None = None,
+    bias: bool = True
 ) -> float:
     """
-    Compute the sample excess kurtosis
+    Compute the excess kurtosis. Calculations are optional corrected for
+    statistical bias (sample or population).
 
     The statistic computed here is the adjusted Fisher-Pearson standardized
     moment coefficient G2, computed directly from the second and fourth
@@ -1301,6 +1309,7 @@ def nankurt(
     skipna : bool, default True
     mask : ndarray[bool], optional
         nan-mask if known
+    bias : bool, default True
 
     Returns
     -------
@@ -1342,9 +1351,14 @@ def nankurt(
     m4 = adjusted4.sum(axis, dtype=np.float64)
 
     with np.errstate(invalid="ignore", divide="ignore"):
-        adj = 3 * (count - 1) ** 2 / ((count - 2) * (count - 3))
-        numerator = count * (count + 1) * (count - 1) * m4
-        denominator = (count - 2) * (count - 3) * m2**2
+        if bias:
+            adj = 3 * (count - 1) ** 2 / ((count - 2) * (count - 3))
+            numerator = count * (count + 1) * (count - 1) * m4
+            denominator = (count - 2) * (count - 3) * m2**2
+        else:
+            adj = 3
+            numerator = m4
+            denominator = m2**2
 
     # floating point error
     #

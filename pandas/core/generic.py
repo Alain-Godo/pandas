@@ -11874,7 +11874,7 @@ class NDFrame(PandasObject, indexing.IndexingMixin):
         numeric_only: bool_t = False,
         **kwargs,
     ):
-        assert name in ["median", "mean", "min", "max", "kurt", "skew"], name
+        assert name in ["median", "mean", "min", "max"], name
         nv.validate_func(name, (), kwargs)
 
         validate_bool_kwarg(skipna, "skipna", none_allowed=False)
@@ -11937,15 +11937,37 @@ class NDFrame(PandasObject, indexing.IndexingMixin):
             "median", nanops.nanmedian, axis, skipna, numeric_only, **kwargs
         )
 
+    @final
+    def _stat_function_bias(
+        self,
+        name: str,
+        func,
+        axis: Axis | None = 0,
+        skipna: bool_t = True,
+        numeric_only: bool_t = False,
+        bias: bool = True,
+        **kwargs,
+    ):
+        assert name in ["kurt", "skew"], name
+        nv.validate_func(name, (), kwargs)
+
+        validate_bool_kwarg(skipna, "skipna", none_allowed=False)
+
+        return self._reduce(
+            func, name=name, axis=axis, skipna=skipna,
+            numeric_only=numeric_only, bias=bias
+        )
+
     def skew(
         self,
         axis: Axis | None = 0,
         skipna: bool_t = True,
         numeric_only: bool_t = False,
+        bias: bool = True,
         **kwargs,
     ) -> Series | float:
-        return self._stat_function(
-            "skew", nanops.nanskew, axis, skipna, numeric_only, **kwargs
+        return self._stat_function_bias(
+            "skew", nanops.nanskew, axis, skipna, numeric_only, bias, **kwargs
         )
 
     def kurt(
@@ -11953,10 +11975,11 @@ class NDFrame(PandasObject, indexing.IndexingMixin):
         axis: Axis | None = 0,
         skipna: bool_t = True,
         numeric_only: bool_t = False,
+        bias: bool = True,
         **kwargs,
     ) -> Series | float:
-        return self._stat_function(
-            "kurt", nanops.nankurt, axis, skipna, numeric_only, **kwargs
+        return self._stat_function_bias(
+            "kurt", nanops.nankurt, axis, skipna, numeric_only, bias, **kwargs
         )
 
     kurtosis = kurt

@@ -11403,9 +11403,10 @@ class DataFrame(NDFrame, OpsMixin):
         axis: Axis | None = 0,
         skipna: bool = True,
         numeric_only: bool = False,
+        bias: bool = True,
         **kwargs,
     ):
-        result = super().skew(axis, skipna, numeric_only, **kwargs)
+        result = super().skew(axis, skipna, numeric_only, bias, **kwargs)
         if isinstance(result, Series):
             result = result.__finalize__(self, method="skew")
         return result
@@ -11416,9 +11417,10 @@ class DataFrame(NDFrame, OpsMixin):
         axis: Axis | None = 0,
         skipna: bool = True,
         numeric_only: bool = False,
+        bias: bool = True,
         **kwargs,
     ):
-        result = super().kurt(axis, skipna, numeric_only, **kwargs)
+        result = super().kurt(axis, skipna, numeric_only, bias, **kwargs)
         if isinstance(result, Series):
             result = result.__finalize__(self, method="kurt")
         return result
