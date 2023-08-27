@@ -12404,6 +12404,38 @@ Returns
 {examples}
 """
 
+_num_bias_doc = """
+{desc}
+
+Parameters
+----------
+axis : {axis_descr}
+    Axis for the function to be applied on.
+    For `Series` this parameter is unused and defaults to 0.
+
+    For DataFrames, specifying ``axis=None`` will apply the aggregation
+    across both axes.
+
+    .. versionadded:: 2.0.0
+
+skipna : bool, default True
+    Exclude NA/null values when computing the result.
+numeric_only : bool, default False
+    Include only float, int, boolean columns. Not implemented for Series.
+bias: bool, default True
+    If False, then the calculations are corrected for statistical bias.
+
+{min_count}\
+**kwargs
+    Additional keyword arguments to be passed to the function.
+
+Returns
+-------
+{name1} or scalar\
+{see_also}\
+{examples}
+"""
+
 _std_notes = """
 
 Notes
@@ -13260,8 +13292,12 @@ def make_doc(name: str, ndim: int) -> str:
         kwargs = {"notes": ""}
 
     elif name == "skew":
-        base_doc = _num_doc
-        desc = "Return unbiased skew over requested axis.\n\nNormalized by N-1."
+        base_doc = _num_bias_doc
+        desc = (
+            "Return unbiased skew over requested axis.\n\n"
+            "Normalized by N-1 by default. This can be changed "
+            "using the bias argument."
+        )
         see_also = ""
         examples = """
 
@@ -13304,12 +13340,13 @@ def make_doc(name: str, ndim: int) -> str:
             dtype: float64"""
         kwargs = {"min_count": ""}
     elif name == "kurt":
-        base_doc = _num_doc
+        base_doc = _num_bias_doc
         desc = (
             "Return unbiased kurtosis over requested axis.\n\n"
             "Kurtosis obtained using Fisher's definition of\n"
             "kurtosis (kurtosis of normal == 0.0). Normalized "
-            "by N-1."
+            "by N-1 by default. This can be changed using the "
+            "bias argument."
         )
         see_also = ""
         examples = """
